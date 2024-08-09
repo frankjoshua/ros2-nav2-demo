@@ -1,17 +1,19 @@
 FROM frankjoshua/ros2
 
 # ** [Optional] Uncomment this section to install additional packages. **
-#
-# USER root
-# ENV DEBIAN_FRONTEND=noninteractive
-# RUN apt-get update \
-#    && apt-get -y install --no-install-recommends ros-galactic-desktop \
-#    #
-#    # Clean up
-#    && apt-get autoremove -y \
-#    && apt-get clean -y \
-#    && rm -rf /var/lib/apt/lists/*
-# ENV DEBIAN_FRONTEND=dialog
+
+USER root
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+   && apt-get -y install --no-install-recommends \ 
+   ros-humble-desktop ros-humble-navigation2 \
+   ros-humble-nav2-bringup ros-humble-turtlebot3-gazebo \
+   #
+   # Clean up
+   && apt-get autoremove -y \
+   && apt-get clean -y \
+   && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=dialog
 
 # Set up auto-source of workspace for ros user
 ARG WORKSPACE
@@ -24,4 +26,7 @@ USER ros
 # ENV NVIDIA_DRIVER_CAPABILITIES \
 #     ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 ENTRYPOINT [ "/bin/bash", "-i", "-c" ]
-CMD ["ros2 topic list"]
+CMD ["source /opt/ros/<ros2-distro>/setup.bash; \
+export TURTLEBOT3_MODEL=waffle; \
+export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/<ros2-distro>/share/turtlebot3_gazebo/models; \
+ ros2 launch nav2_bringup tb3_simulation_launch.py headless:=False"]

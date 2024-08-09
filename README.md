@@ -10,8 +10,12 @@ This repo is mostly an example of how to build a multi architecture docker conta
 
 ```
 docker run -it \
-    --network="host" \
-    frankjoshua/ros2-master
+        --privileged \
+        --network="host" \
+        --env="DISPLAY" \
+        --env="QT_X11_NO_MITSHM=1" \
+        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    frankjoshua/ros2-nav2-demo
 ```
 
 ## Building
@@ -21,12 +25,9 @@ Use [build.sh](build.sh) to build the docker containers.
 <br>Local builds are as follows:
 
 ```
-./build.sh -t frankjoshua/ros2-master -l
+./build.sh -t frankjoshua/ros2-nav2-demo -l
 ```
 
-## Template
-
-This repo is a GitHub template. Just change the repo name in [.github/workflows/ci.yml](.github/workflows/ci.yml) and edit [Dockerfile](Dockerfile) and [README.md](README.md) to taste.
 
 ## Testing
 
