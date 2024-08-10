@@ -26,7 +26,7 @@ USER ros
 # ENV NVIDIA_DRIVER_CAPABILITIES \
 #     ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 ENTRYPOINT [ "/bin/bash", "-i", "-c" ]
-CMD ["source /opt/ros/<ros2-distro>/setup.bash; \
+CMD ["source /opt/ros/humble/setup.bash; \
 export TURTLEBOT3_MODEL=waffle; \
-export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/<ros2-distro>/share/turtlebot3_gazebo/models; \
+export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/humble/share/turtlebot3_gazebo/models; \
  ros2 launch nav2_bringup tb3_simulation_launch.py headless:=False"]
