@@ -1,32 +1,22 @@
-FROM frankjoshua/ros2
+# TurtleBot3 + Nav2 demo, auto-launching, ROS 2 Humble
+FROM osrf/ros:humble-desktop-full
 
-# ** [Optional] Uncomment this section to install additional packages. **
-
-USER root
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update \
-   && apt-get -y install --no-install-recommends \ 
-   ros-humble-desktop ros-humble-navigation2 \
-   ros-humble-nav2-bringup ros-humble-turtlebot3-gazebo \
-   #
-   # Clean up
-   && apt-get autoremove -y \
-   && apt-get clean -y \
-   && rm -rf /var/lib/apt/lists/*
-ENV DEBIAN_FRONTEND=dialog
 
-# Set up auto-source of workspace for ros user
-ARG WORKSPACE
-RUN echo "if [ -f ${WORKSPACE}/install/setup.bash ]; then source ${WORKSPACE}/install/setup.bash; fi" >> /home/ros/.bashrc
+# Nav2 + TurtleBot3 Gazebo bits
+RUN apt-get update && apt-get install -y \
+    ros-humble-navigation2 \
+    ros-humble-nav2-bringup \
+    ros-humble-turtlebot3-gazebo \
+    ros-humble-turtlebot3 \
+ && rm -rf /var/lib/apt/lists/*
 
-USER ros
-# # nvidia-container-runtime
-# ENV NVIDIA_VISIBLE_DEVICES \
-#     ${NVIDIA_VISIBLE_DEVICES:-all}
-# ENV NVIDIA_DRIVER_CAPABILITIES \
-#     ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
-ENTRYPOINT [ "/bin/bash", "-i", "-c" ]
-CMD ["source /opt/ros/humble/setup.bash; \
-export TURTLEBOT3_MODEL=waffle; \
-export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/humble/share/turtlebot3_gazebo/models; \
- ros2 launch nav2_bringup tb3_simulation_launch.py headless:=False"]
+# Pick a model: burger | waffle | waffle_pi
+ENV TURTLEBOT3_MODEL=waffle
+
+COPY aws-robomaker-small-house-world /sim/worlds/aws_small_house
+
+COPY launch.sh /launch.sh
+RUN chmod +x /launch.sh
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["/launch.sh"]
