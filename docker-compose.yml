@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  nav2-demo:
+    container_name: ros2-nav2-demo
+    build:
+      context: .
+      dockerfile: Dockerfile
+    privileged: true
+    network_mode: host
+    pid: host
+    ipc: host
+    environment:
+      DISPLAY: "${DISPLAY:-:0}"
+      QT_X11_NO_MITSHM: "1"
+      TURTLEBOT3_MODEL: "${TURTLEBOT3_MODEL:-waffle}"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    stdin_open: true
+    tty: true
+    entrypoint: ["/ros_entrypoint.sh"]
+    command: ["/launch.sh"]
+
+  ros2-bridge-suite:
+    image: frankjoshua/ros2-bridge-suite
+    container_name: ros2-bridge-suite
+    network_mode: host
+    pid: host
+    ipc: host
+    stdin_open: true
+    tty: true
+
+  ros-mcp-server:
+    image: frankjoshua/ros-mcp-server
+    container_name: ros-mcp-server
+    network_mode: host
+    pid: host
+    ipc: host
+    environment:
+      ROSBRIDGE_URL: "ws://127.0.0.1:9090"
+      MCP_HTTP_HOST: "0.0.0.0"
+      MCP_HTTP_PORT: "8000"
+    stdin_open: true
+    tty: true
+    restart: unless-stopped

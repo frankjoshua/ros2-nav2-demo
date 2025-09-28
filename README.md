@@ -6,16 +6,15 @@
 ## Example
 
 ```
-docker run -it \
-        --privileged \
-        --network="host" \
-        --pid="host" \
-        --ipc="host" \
-        --env="DISPLAY" \
-        --env="QT_X11_NO_MITSHM=1" \
-        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-    frankjoshua/ros2-nav2-demo
+docker compose up
 ```
+
+The compose stack now starts two services:
+- `nav2-demo` (mirrors the previous `docker run` flags for the Nav2 simulator, including
+  privileged mode, host namespaces, and X11 sharing so you can keep using steps like
+  `xhost +local:`)
+- `ros2-bridge-suite` (pulls `frankjoshua/ros2-bridge-suite` and shares the host
+  network/pid/ipc namespaces for ROS 2 bridging tools)
 
 ## Building
 
@@ -25,6 +24,12 @@ Use [build.sh](build.sh) to build the docker containers.
 
 ```
 ./build.sh -t frankjoshua/ros2-nav2-demo -l
+```
+
+To build the local compose image for the current platform you can also run:
+
+```
+docker compose build
 ```
 
 ## License
